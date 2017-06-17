@@ -17,6 +17,38 @@ pub enum Error {
     Conversion(Box<error::Error + Sync + Send>),
 }
 
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(error::Error::description(self))?;
+        match *self {
+            Error::Bing(ref err) => write!(f, ": {}", err),
+            Error::Http(ref err) => write!(f, ": {}", err),
+            Error::Io(ref err) => write!(f, ": {}", err),
+            Error::Conversion(ref err) => write!(f, ": {}", err),
+        }
+    }
+}
+
+impl error::Error for Error {
+    fn description(&self) -> &str {
+        match *self {
+            Error::Bing(_) => "error reported by bing maps",
+            Error::Http(_) => "error communicating with bing maps",
+            Error::Io(_) => "error reading response from bing maps",
+            Error::Conversion(_) => "error converting between wire format and Rust types",
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            Error::Bing(ref err) => Some(err),
+            Error::Http(ref err) => Some(err),
+            Error::Io(ref err) => Some(err),
+            Error::Conversion(ref err) => Some(&**err),
+        }
+    }
+}
+
 impl From<RequestError> for Error {
     fn from(err: RequestError) -> Error {
         Error::Bing(err)
