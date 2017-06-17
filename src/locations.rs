@@ -65,7 +65,6 @@ pub struct FindPoint {
     pub include_entity_types: Vec<EntityType>,
     pub include_neighborhood: bool,
     pub include_ciso2: bool,
-    pub max_results: Option<u32>,
 }
 impl FindPoint {
     pub fn from_latlng(lat: f64, lng: f64) -> FindPoint {
@@ -99,7 +98,21 @@ impl Location {
     /// Gets the location information associated with latitude and longitude coordinates.
     pub fn find_by_point(client: &Client, find: FindPoint) -> Result<Vec<Location>, Error> {
         let path = format!("/Locations/{}", find.point);
-        let mut params = HashMap::with_capacity(0);
+
+        // Build optional params
+        let entity_types: String;
+        let mut params = HashMap::<&str, &str>::new();
+        if find.include_entity_types.len() > 0 {
+            let types: Vec<String> = find.include_entity_types.iter().map(|el| format!("{:?}", el)).collect();
+            entity_types = types.join(",");
+            params.insert("include_entity_types", &entity_types);
+        }
+        if find.include_neighborhood {
+            params.insert("inclnb", "1");
+        }
+        if find.include_ciso2 {
+            params.insert("incl", "ciso2");
+        }
 
         // Make request and process response
         let response: Response<Location> = client.get(&path, &mut params)?;
