@@ -15,9 +15,13 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
+extern crate serde_qs;
 
 mod client;
 mod error;
+mod response;
 
 pub use client::Client;
 pub use error::{Error, RequestError};
+pub use response::Response;
+pub mod location;

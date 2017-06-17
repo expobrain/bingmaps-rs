@@ -4,7 +4,11 @@ use hyper::client::RequestBuilder;
 use hyper::net::HttpsConnector;
 use serde;
 use serde_json as json;
+use serde_qs as qs;
+use std::collections::HashMap;
 use std::io::Read;
+
+pub type Params<'a> = HashMap<&'a str, &'a str>;
 
 pub struct Client {
     client: HttpClient,
@@ -12,9 +16,9 @@ pub struct Client {
 }
 
 impl Client {
-    fn url(path: &str, key: &str) -> String {
-        // FIXME: Should not assume that there will always be other query params
-        format!("https://dev.virtualearth.net/REST/v1/{}&key={}", path, key)
+    fn url(path: &str, params: &Params) -> String {
+        let query = qs::to_string(params).unwrap_or(String::from(""));
+        format!("https://dev.virtualearth.net/REST/v1/{}?{}", path, query)
     }
 
     #[cfg(feature = "with-native-tls")]
@@ -43,8 +47,9 @@ impl Client {
         }
     }
 
-    pub fn get<T: serde::Deserialize>(&self, path: &str) -> Result<T, Error> {
-        let url = Client::url(path, &self.key);
+    pub fn get<'a, T: serde::Deserialize>(&'a self, path: &'a str, params: &mut Params<'a>) -> Result<T, Error> {
+        params.insert("key", &self.key);
+        let url = Client::url(path, &params);
         let request = self.client.get(&url);
         send(request)
     }
