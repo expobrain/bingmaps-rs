@@ -10,7 +10,7 @@ pub struct Point {
     pub coordinates: Vec<f64>,
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy)]
 pub enum EntityType {
     Address,
     Neighborhood,
@@ -45,14 +45,14 @@ pub struct Address {
     pub formatted: Option<String>,
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Clone, Copy)]
 pub enum Confidence {
     High,
     Medium,
     Low,
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Clone, Copy)]
 pub enum MatchCode {
     Good,
     Ambiguous,
