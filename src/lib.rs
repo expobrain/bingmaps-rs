@@ -24,4 +24,4 @@ mod response;
 pub use client::Client;
 pub use error::{Error, RequestError};
 pub use response::Response;
-pub mod location;
+pub mod locations;
