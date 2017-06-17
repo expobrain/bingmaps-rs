@@ -1,0 +1,27 @@
+[package]
+name = "bingmaps"
+version = "0.1.0"
+description = "API bindings for the Bing Maps v1 HTTP API"
+authors = ["Kevin Stenerson <kevin@rapiditynetworks.com>"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/rapiditynetworks/bingmaps-rs"
+documentation = "https://docs.rs/bingmaps-rs"
+keywords = ["bing", "maps", "microsoft", "geocoding", "v1", "api"]
+categories = ["api-bindings"]
+
+[features]
+default = ["with-native-tls"]
+with-openssl = ["hyper-openssl"]
+with-native-tls = ["hyper-native-tls"]
+
+[lib]
+name = "bingmaps"
+
+[dependencies]
+hyper = "^0.10"
+hyper-openssl = { version = "^0.2", optional = true }
+hyper-native-tls = { version = "^0.2", optional = true }
+serde = "^0.9"
+serde_derive = "^0.9"
+serde_json = "^0.9"
