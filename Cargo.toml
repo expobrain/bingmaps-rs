@@ -7,7 +7,7 @@ license = "MIT/Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/rapiditynetworks/bingmaps-rs"
 documentation = "https://docs.rs/bingmaps-rs"
-keywords = ["bing", "maps", "microsoft", "geocoding", "v1", "api"]
+keywords = ["bing", "maps", "microsoft", "geocoding", "api"]
 categories = ["api-bindings"]
 
 [features]
