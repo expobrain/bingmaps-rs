@@ -23,7 +23,7 @@ pub enum EntityType {
 
 #[derive(Debug, Deserialize)]
 pub struct Address {
-    #[serde(rename = "address_line")]
+    #[serde(rename = "addressLine")]
     pub address_line: Option<String>,
     #[serde(rename = "neighborhood")]
     pub neighborhood: Option<String>,
