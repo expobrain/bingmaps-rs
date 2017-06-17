@@ -32,9 +32,9 @@ pub struct Address {
     #[serde(rename = "postalCode")]
     pub postal_code: Option<String>,
     #[serde(rename = "adminDistrict1")]
-    pub admin_district_1: Option<String>,
+    pub admin_district1: Option<String>,
     #[serde(rename = "adminDistrict2")]
-    pub admin_district_2: Option<String>,
+    pub admin_district2: Option<String>,
     #[serde(rename = "countryRegion")]
     pub country: Option<String>,
     #[serde(rename = "countryRegionIso2")]
