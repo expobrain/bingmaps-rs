@@ -21,6 +21,7 @@ pub enum EntityType {
     CountryRegion,
     
     River, // missing in MSDN documentation, but exists in the wild
+    Postcode2, // missing in MSDN documentation, but exists in the wild
 }
 
 #[derive(Debug, Deserialize)]
