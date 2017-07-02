@@ -56,7 +56,7 @@ pub enum Confidence {
 pub enum MatchCode {
     Good,
     Ambiguous,
-    UpHeirarchy,
+    UpHierarchy,
 }
 
 #[derive(Default, Serialize)]
