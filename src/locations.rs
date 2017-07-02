@@ -19,6 +19,8 @@ pub enum EntityType {
     AdminDivision1,
     AdminDivision2,
     CountryRegion,
+    
+    River, // missing in MSDN documentation, but exists in the wild
 }
 
 #[derive(Debug, Deserialize)]
