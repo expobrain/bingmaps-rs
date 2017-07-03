@@ -1,5 +1,6 @@
-extern crate hyper;
-extern crate serde_json as json;
+use hyper;
+use serde_json as json;
+use serde_qs::ser as qs;
 use std::error;
 use std::fmt;
 use std::io;
@@ -64,6 +65,12 @@ impl From<hyper::Error> for Error {
 impl From<io::Error> for Error {
     fn from(err: io::Error) -> Error {
         Error::Io(err)
+    }
+}
+
+impl From<qs::Error> for Error {
+    fn from(err: qs::Error) -> Error {
+        Error::Conversion(Box::new(err))
     }
 }
 

@@ -1,6 +1,8 @@
-use error::Error;
+use common::CultureCode;
 use client::Client;
+use error::Error;
 use response::Response;
+use serde_qs as qs;
 use std::collections::HashMap;
 
 // TODO: Maybe use a GeoJson crate here
@@ -19,7 +21,8 @@ pub enum EntityType {
     AdminDivision1,
     AdminDivision2,
     CountryRegion,
-    
+
+    Lake, // missing in MSDN documentation, but exists in the wild
     River, // missing in MSDN documentation, but exists in the wild
     Postcode2, // missing in MSDN documentation, but exists in the wild
 }
@@ -82,6 +85,15 @@ impl FindPoint {
     }
 }
 
+#[derive(Default, Serialize)]
+pub struct ContextParams {
+    pub culture: Option<CultureCode>,
+    pub user_map_view: Option<Vec<f64>>,
+    pub user_location: Option<Vec<f64>>,
+    pub user_ip: Option<String>,
+    pub user_region: Option<String>,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Location {
     pub name: String,
@@ -99,11 +111,14 @@ pub struct Location {
 
 impl Location {
     /// Gets the location information associated with latitude and longitude coordinates.
-    pub fn find_by_point(client: &Client, find: FindPoint) -> Result<Vec<Location>, Error> {
+    pub fn find_by_point(client: &Client, find: FindPoint, opts: Option<ContextParams>) -> Result<Vec<Location>, Error> {
         let path = format!("/Locations/{}", find.point);
 
         // Build optional params
         let entity_types: String;
+        let culture: String;
+        let user_map_view: String;
+        let user_location: String;
         let mut params = HashMap::<&str, &str>::new();
         if find.include_entity_types.len() > 0 {
             let types: Vec<String> = find.include_entity_types.iter().map(|el| format!("{:?}", el)).collect();
@@ -115,6 +130,22 @@ impl Location {
         }
         if find.include_ciso2 {
             params.insert("incl", "ciso2");
+        }
+        if let Some(ref ctx) = opts {
+            if let Some(ref c) = ctx.culture {
+                culture = qs::to_string(&c).map_err(|err| Error::from(err))?;
+                params.insert("c", &culture);
+            }
+            if let Some(ref umv) = ctx.user_map_view {
+                user_map_view = umv.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(",");
+                params.insert("umv", &user_map_view);
+            }
+            if let Some(ref ul) = ctx.user_location {
+                user_location = ul.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(",");
+                params.insert("ul", &user_location);
+            }
+            if let Some(ref uip) = ctx.user_ip { params.insert("uip", &uip); }
+            if let Some(ref ur) = ctx.user_region { params.insert("ur", &ur); }
         }
 
         // Make request and process response
@@ -128,9 +159,28 @@ impl Location {
     }
 
     /// Gets latitude and longitude coordinates that correspond to location information provided as a query string.
-    pub fn find_by_query(client: &Client, query: &str) -> Result<Vec<Location>, Error> {
+    pub fn find_by_query(client: &Client, query: &str, opts: Option<ContextParams>) -> Result<Vec<Location>, Error> {
+        let culture: String;
+        let user_map_view: String;
+        let user_location: String;
         let mut params = HashMap::new();
         params.insert("q", query);
+        if let Some(ref ctx) = opts {
+            if let Some(ref c) = ctx.culture {
+                culture = qs::to_string(&c).map_err(|err| Error::from(err))?;
+                params.insert("c", &culture);
+            }
+            if let Some(ref umv) = ctx.user_map_view {
+                user_map_view = umv.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(",");
+                params.insert("umv", &user_map_view);
+            }
+            if let Some(ref ul) = ctx.user_location {
+                user_location = ul.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(",");
+                params.insert("ul", &user_location);
+            }
+            if let Some(ref uip) = ctx.user_ip { params.insert("uip", &uip); }
+            if let Some(ref ur) = ctx.user_region { params.insert("ur", &ur); }
+        }
 
         // Make request and process response
         let response: Response<Location> = client.get("/Locations", &mut params)?;

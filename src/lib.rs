@@ -18,6 +18,7 @@ extern crate serde_json;
 extern crate serde_qs;
 
 mod client;
+mod common;
 mod error;
 mod response;
 
