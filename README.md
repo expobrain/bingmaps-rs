@@ -15,7 +15,7 @@ Put this in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bingmaps = "0.0.2"
+bingmaps = "0.0.3"
 ```
 
 And this in your crate root:
@@ -34,11 +34,11 @@ let key = env::var("BING_MAPS_KEY").unwrap();
 let client = bingmaps::Client::new();
 
 // Find a Location by search-term / query
-let locations = Location::find_by_query(&client, "Times Square, New York").unwrap();
+let locations = Location::find_by_query(&client, "Times Square, New York", None).unwrap();
 
 // Find a Location by Lat/Lng values OR from text (eg. FindPoint::from_str("40.75890,-73.98516");)
 let params = FindPoint::from_latlng(40.758903, -73.985163);
-let locations = Location::find_by_point(&client, params).unwrap();
+let locations = Location::find_by_point(&client, params, None).unwrap();
 println!("{:#?}", locations.next().unwrap());
 
 /*
