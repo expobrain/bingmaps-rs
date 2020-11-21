@@ -1,4 +1,4 @@
-use hyper;
+
 use serde_json as json;
 use serde_urlencoded::ser as urlencoded;
 use std::error;

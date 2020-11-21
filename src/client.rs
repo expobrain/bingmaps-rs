@@ -2,7 +2,7 @@ use crate::error::{Error, RequestError};
 use hyper::Client as HttpClient;
 use hyper::client::RequestBuilder;
 use hyper::net::HttpsConnector;
-use serde;
+
 use serde_json as json;
 use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
@@ -17,7 +17,7 @@ pub struct Client {
 
 impl Client {
     fn url(path: &str, params: &Params) -> String {
-        let query = urlencoded::to_string(params).unwrap_or(String::from(""));
+        let query = urlencoded::to_string(params).unwrap_or_else(|_| String::from(""));
         format!("https://dev.virtualearth.net/REST/v1/{}?{}", path, query)
     }
 
@@ -28,7 +28,7 @@ impl Client {
         let tls = TlsClient::new();
         let connector = HttpsConnector::new(tls);
         let client = HttpClient::with_connector(connector);
-        Client{client: client, key: key.into()}
+        Client{client, key: key.into()}
     }
 
     #[cfg(feature = "with-openssl")]
@@ -65,10 +65,10 @@ fn send<T: serde::de::DeserializeOwned>(request: RequestBuilder) -> Result<T, Er
             }
             return Err(Error::from(RequestError {
                 http_status: status,
-                should_wait: should_wait,
+                should_wait,
             }));
         }
     }
 
-    json::from_str(&body).map_err(|err| Error::from(err))
+    json::from_str(&body).map_err(Error::from)
 }

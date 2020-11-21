@@ -140,7 +140,7 @@ impl Location {
         let user_map_view: String;
         let user_location: String;
         let mut params = HashMap::<&str, &str>::new();
-        if find.include_entity_types.len() > 0 {
+        if !find.include_entity_types.is_empty() {
             let types: Vec<String> = find.include_entity_types.iter().map(|el| format!("{:?}", el)).collect();
             entity_types = types.join(",");
             params.insert("include_entity_types", &entity_types);
@@ -153,7 +153,7 @@ impl Location {
         }
         if let Some(ref ctx) = opts {
             if let Some(ref c) = ctx.culture {
-                culture = urlencoded::to_string(&c).map_err(|err| Error::from(err))?;
+                culture = urlencoded::to_string(&c).map_err(Error::from)?;
                 params.insert("c", &culture);
             }
             if let Some(ref umv) = ctx.user_map_view {
@@ -187,7 +187,7 @@ impl Location {
         params.insert("q", query);
         if let Some(ref ctx) = opts {
             if let Some(ref c) = ctx.culture {
-                culture = urlencoded::to_string(&c).map_err(|err| Error::from(err))?;
+                culture = urlencoded::to_string(&c).map_err(Error::from)?;
                 params.insert("c", &culture);
             }
             if let Some(ref umv) = ctx.user_map_view {
