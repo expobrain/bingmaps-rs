@@ -36,6 +36,7 @@ pub enum EntityType {
     RoadIntersection,
     HigherEducationFacility,
     Stadium,
+    TouristStructure,
     Airport,
     Park,
     Lake,
