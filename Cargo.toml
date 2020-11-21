@@ -9,6 +9,7 @@ repository = "https://github.com/rapiditynetworks/bingmaps-rs"
 documentation = "https://docs.rs/bingmaps-rs"
 keywords = ["bing", "maps", "microsoft", "geocoding", "api"]
 categories = ["api-bindings"]
+edition = "2018"
 
 [features]
 default = ["with-rustls"]

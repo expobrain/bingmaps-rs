@@ -15,32 +15,29 @@ pub enum Error {
     /// An error reading the response body.
     Io(io::Error),
     /// An error converting between wire format and Rust types.
-    Conversion(Box<error::Error + Send>),
+    Conversion(Box<dyn error::Error + Send>),
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str(error::Error::description(self))?;
+        let description = match *self {
+            Error::Bing(_) => "error reported by bing maps",
+            Error::Http(_) => "error communicating with bing maps",
+            Error::Io(_) => "error reading response from bing maps",
+            Error::Conversion(_) => "error converting between wire format and Rust types",
+        };
+
         match *self {
-            Error::Bing(ref err) => write!(f, ": {}", err),
-            Error::Http(ref err) => write!(f, ": {}", err),
-            Error::Io(ref err) => write!(f, ": {}", err),
-            Error::Conversion(ref err) => write!(f, ": {}", err),
+            Error::Bing(ref err) => write!(f, "{}: {}", description, err),
+            Error::Http(ref err) => write!(f, "{}: {}", description, err),
+            Error::Io(ref err) => write!(f, "{}: {}", description, err),
+            Error::Conversion(ref err) => write!(f, "{}: {}", description, err),
         }
     }
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::Bing(_) => "error reported by bing maps",
-            Error::Http(_) => "error communicating with bing maps",
-            Error::Io(_) => "error reading response from bing maps",
-            Error::Conversion(_) => "error converting between wire format and Rust types",
-        }
-    }
-
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             Error::Bing(ref err) => Some(err),
             Error::Http(ref err) => Some(err),

@@ -1,7 +1,7 @@
-use common::CultureCode;
-use client::Client;
-use error::Error;
-use response::Response;
+use crate::common::CultureCode;
+use crate::client::Client;
+use crate::error::Error;
+use crate::response::Response;
 use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
 

@@ -1,4 +1,4 @@
-use error::{Error, RequestError};
+use crate::error::{Error, RequestError};
 use hyper::Client as HttpClient;
 use hyper::client::RequestBuilder;
 use hyper::net::HttpsConnector;
@@ -55,7 +55,7 @@ fn send<T: serde::de::DeserializeOwned>(request: RequestBuilder) -> Result<T, Er
     response.read_to_string(&mut body)?;
     let status = response.status_raw().0;
     match status {
-        200...299 => {}
+        200..=299 => {}
         _ => {
             let mut should_wait = false;
             if let Some(raw) = response.headers.get_raw("X-MS-BM-WS-INFO") {

@@ -22,7 +22,7 @@ mod common;
 mod error;
 mod response;
 
-pub use client::Client;
-pub use error::{Error, RequestError};
-pub use response::Response;
+pub use crate::client::Client;
+pub use crate::error::{Error, RequestError};
+pub use crate::response::Response;
 pub mod locations;
