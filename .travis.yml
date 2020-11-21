@@ -1,0 +1,25 @@
+language: rust
+
+cache: cargo
+
+matrix:
+  fast_finish: true
+  include:
+    - rust: stable
+    - rust: beta
+    - rust: nightly
+  allow_failures:
+    - rust: beta
+    - rust: nightly
+
+before_script:
+  # Stamps the current `target/` content
+  - cargo install cargo-sweep
+  - cargo sweep -s
+
+script:
+  - cargo test
+
+before_cache:
+  # Cleans all the `target/` older than stamp
+  - cargo sweep -f
