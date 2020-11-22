@@ -30,16 +30,20 @@ use bingmaps;
 use bingmaps::locations::{Location, FindPoint, EntityType, Confidence, MatchCode};
 use std::env;
 
-let key = env::var("BING_MAPS_KEY").unwrap();
-let client = bingmaps::Client::new(key);
+#[tokio::main]
+pub async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let key = env::var("BING_MAPS_KEY").unwrap();
+    let client = bingmaps::Client::new(key);
 
-// Find a Location by search-term / query
-let locations = Location::find_by_query(&client, "Times Square, New York", None).unwrap();
+    // Find a Location by search-term / query
+    let locations = Location::find_by_query(&client, "Times Square, New York", None).await?;
 
-// Find a Location by Lat/Lng values OR from text (eg. FindPoint::from_str("40.75890,-73.98516");)
-let params = FindPoint::from_latlng(40.758903, -73.985163);
-let locations = Location::find_by_point(&client, params, None).unwrap();
-println!("{:#?}", locations.next().unwrap());
+    // Find a Location by Lat/Lng values OR from text (eg. FindPoint::from_str("40.75890,-73.98516");)
+    let params = FindPoint::from_latlng(40.758903, -73.985163);
+    let locations = Location::find_by_point(&client, params, None).await?;
+
+    Ok(())
+}
 
 /*
 Location {

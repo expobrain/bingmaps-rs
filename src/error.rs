@@ -11,7 +11,7 @@ pub enum Error {
     /// An error reported by Bing Maps.
     Bing(RequestError),
     /// A networking error communicating with the Bing Maps server.
-    Http(hyper::Error),
+    Http(reqwest::Error),
     /// An error reading the response body.
     Io(io::Error),
     /// An error converting between wire format and Rust types.
@@ -53,8 +53,8 @@ impl From<RequestError> for Error {
     }
 }
 
-impl From<hyper::Error> for Error {
-    fn from(err: hyper::Error) -> Error {
+impl From<reqwest::Error> for Error {
+    fn from(err: reqwest::Error) -> Error {
         Error::Http(err)
     }
 }

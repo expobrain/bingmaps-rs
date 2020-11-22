@@ -132,7 +132,7 @@ pub struct Location {
 
 impl Location {
     /// Gets the location information associated with latitude and longitude coordinates.
-    pub fn find_by_point(client: &Client, find: FindPoint, opts: Option<ContextParams>) -> Result<Vec<Location>, Error> {
+    pub async fn find_by_point(client: &Client, find: FindPoint, opts: Option<ContextParams>) -> Result<Vec<Location>, Error> {
         let path = format!("/Locations/{}", find.point);
 
         // Build optional params
@@ -170,7 +170,7 @@ impl Location {
         }
 
         // Make request and process response
-        let response: Response<Location> = client.get(&path, &mut params)?;
+        let response: Response<Location> = client.get(&path, &mut params).await?;
         let resource_set = response.resource_sets.into_iter().next();
         if let Some(set) = resource_set {
             Ok(set.resources)
@@ -180,7 +180,7 @@ impl Location {
     }
 
     /// Gets latitude and longitude coordinates that correspond to location information provided as a query string.
-    pub fn find_by_query(client: &Client, query: &str, opts: Option<ContextParams>) -> Result<Vec<Location>, Error> {
+    pub async fn find_by_query(client: &Client, query: &str, opts: Option<ContextParams>) -> Result<Vec<Location>, Error> {
         let culture: String;
         let user_map_view: String;
         let user_location: String;
@@ -204,7 +204,7 @@ impl Location {
         }
 
         // Make request and process response
-        let response: Response<Location> = client.get("/Locations", &mut params)?;
+        let response: Response<Location> = client.get("/Locations", &mut params).await?;
         let resource_set = response.resource_sets.into_iter().next();
         if let Some(set) = resource_set {
             Ok(set.resources)

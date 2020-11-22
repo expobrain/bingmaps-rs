@@ -1,12 +1,10 @@
 use crate::error::{Error, RequestError};
-use hyper::Client as HttpClient;
-use hyper::client::RequestBuilder;
-use hyper::net::HttpsConnector;
+use reqwest::Client as HttpClient;
+use reqwest::RequestBuilder;
 
-use serde_json as json;
+// use serde_json as json;
 use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
-use std::io::Read;
 
 pub type Params<'a> = HashMap<&'a str, &'a str>;
 
@@ -21,54 +19,47 @@ impl Client {
         format!("https://dev.virtualearth.net/REST/v1/{}?{}", path, query)
     }
 
-    #[cfg(feature = "with-rustls")]
     pub fn new<Str: Into<String>>(key: Str) -> Client {
-        use hyper_rustls::TlsClient;
-
-        let tls = TlsClient::new();
-        let connector = HttpsConnector::new(tls);
-        let client = HttpClient::with_connector(connector);
-        Client{client, key: key.into()}
-    }
-
-    #[cfg(feature = "with-openssl")]
-    pub fn new<Str: Into<String>>(key: Str) -> Client {
-        use hyper_openssl::OpensslClient;
-
-        let tls = OpensslClient::new().unwrap();
-        let connector = HttpsConnector::new(tls);
-        let client = HttpClient::with_connector(connector);
-        Client{client: client, key: key.into()}
-    }
-
-    pub fn get<'a, T: serde::de::DeserializeOwned>(&'a self, path: &'a str, params: &mut Params<'a>) -> Result<T, Error> {
-        params.insert("key", &self.key);
-        let url = Client::url(path, &params);
-        let request = self.client.get(&url);
-        send(request)
-    }
-}
-
-fn send<T: serde::de::DeserializeOwned>(request: RequestBuilder) -> Result<T, Error> {
-    let mut response = request.send()?;
-    let mut body = String::with_capacity(4096);
-    response.read_to_string(&mut body)?;
-    let status = response.status_raw().0;
-    match status {
-        200..=299 => {}
-        _ => {
-            let mut should_wait = false;
-            if let Some(raw) = response.headers.get_raw("X-MS-BM-WS-INFO") {
-                for line in raw.iter() {
-                    should_wait = line == b"1";
-                }
-            }
-            return Err(Error::from(RequestError {
-                http_status: status,
-                should_wait,
-            }));
+        Client {
+            client: HttpClient::new(),
+            key: key.into(),
         }
     }
 
-    json::from_str(&body).map_err(Error::from)
+    pub async fn get<'a, T: serde::de::DeserializeOwned>(
+        &'a self,
+        path: &'a str,
+        params: &mut Params<'a>,
+    ) -> Result<T, Error> {
+        params.insert("key", &self.key);
+
+        let url = Client::url(path, &params);
+        let request = self.client.get(&url);
+
+        send(request).await
+    }
+}
+
+async fn send<T: serde::de::DeserializeOwned>(request: RequestBuilder) -> Result<T, Error> {
+    let response = request.send().await?;
+    let status = response.status();
+
+    if !status.is_success() {
+        let mut should_wait = false;
+
+        if let Some(raw) = response.headers().get("X-MS-BM-WS-INFO") {
+            for line in raw.to_str().iter() {
+                should_wait = *line == "1";
+            }
+        }
+
+        return Err(Error::from(RequestError {
+            http_status: status.as_u16(),
+            should_wait,
+        }));
+    }
+
+    // response.read_to_string(&mut body)?;
+    // json::from_str(&body).map_err(Error::from)
+    response.json::<T>().await.map_err(Error::from)
 }

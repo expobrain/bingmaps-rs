@@ -11,16 +11,9 @@ keywords = ["bing", "maps", "microsoft", "geocoding", "api"]
 categories = ["api-bindings"]
 edition = "2018"
 
-[features]
-default = ["with-rustls"]
-with-rustls = ["hyper-rustls"]
-with-openssl = ["hyper-openssl"]
-
 [dependencies]
-hyper = "^0.10"
-hyper-rustls = { version = "^0.6", optional = true }
-hyper-openssl = { version = "^0.2", optional = true }
 serde = "^1.0"
 serde_derive = "^1.0"
 serde_json = "^1.0"
-serde_urlencoded = "^0.5"
+serde_urlencoded = "^0.7"
+reqwest = { version = "^0.10", features = ["json"] }
