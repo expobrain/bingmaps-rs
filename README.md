@@ -1,6 +1,7 @@
 bingmaps-rs
 =============
 
+[![Build Status](https://travis-ci.org/rapiditynetworks/bingmaps-rs.svg?branch=master)](https://travis-ci.org/rapiditynetworks/bingmaps-rs)
 [![bingmaps on crates.io](https://img.shields.io/crates/v/bingmaps.svg)](https://crates.io/crates/bingmaps)
 [![bingmaps on docs.rs](https://docs.rs/bingmaps/badge.svg)](https://docs.rs/bingmaps)
 
