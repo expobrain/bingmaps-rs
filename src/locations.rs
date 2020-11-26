@@ -11,7 +11,7 @@ pub type LatLng = (f64, f64);
 // type SouthWestNorthEast = (f64, f64, f64, f64);
 
 // NOTE: Not GeoJSON, points are "(Lat, Lng)" not "(Lng, Lat)"
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Point {
     // pub type: String // <-- Always Point for Location
     #[serde(rename = "coordinates")]
@@ -44,7 +44,7 @@ pub enum EntityType {
     Island,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Address {
     #[serde(rename = "addressLine")]
     pub address_line: Option<String>,
@@ -82,7 +82,7 @@ pub enum MatchCode {
     UpHierarchy,
 }
 
-#[derive(Default, Serialize)]
+#[derive(Default, Serialize, Clone)]
 pub struct FindPoint {
     pub point: String,
     pub include_entity_types: Vec<EntityType>,
@@ -103,7 +103,7 @@ impl FindPoint {
 }
 
 // TODO: Maybe use references to ContextParams, instead of the full thing? --- or implement Copy/Clone
-#[derive(Default, Serialize)]
+#[derive(Default, Serialize, Clone)]
 pub struct ContextParams {
     pub culture: Option<CultureCode>,
     pub user_map_view: Option<Vec<f64>>, // TODO: Define a struct
@@ -115,7 +115,7 @@ pub struct ContextParams {
     pub user_region: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Location {
     pub name: String,
     pub point: Point,

@@ -1,4 +1,4 @@
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum CultureCode {
     #[serde(rename = "af")] Afrikaans,
     #[serde(rename = "am")] Amharic,
